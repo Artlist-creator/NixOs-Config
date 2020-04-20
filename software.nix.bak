@@ -7,11 +7,11 @@
   programs = {
     adb.enable = true;
     java.enable = true;
+
     # Some programs need SUID wrappers, can be configured further or are
     # started in user sessions.
     mtr.enable = true;
     gnupg.agent = { enable = true; enableSSHSupport = true; };
-  };
  
   environment.systemPackages = with pkgs; [ 
 
@@ -22,7 +22,6 @@
     lsof
     pciutils # for lspci
     wget
-    htop
     sysstat # for iostats (I/O on disks)
     nmap # stats of the network
     powertop # monitor energy consumption
@@ -35,14 +34,15 @@
     os-prober # Enables automatic discovery of boot partitions
     grub2
     grub2_efi
-    wget
-    vim
     nixos-grub2-theme
     udisks
     kitty
     xorg.xbacklight
     playerctl
     flameshot
+    fim
+    unstable.wineWowPackages.staging
+    (winetricks.override { wine = unstable.wineWowPackages.staging; })
 
     # GUI serious apps
     brave
@@ -50,7 +50,7 @@
     gparted
     kdeApplications.okular
     vlc
-    
+
     # Software Development
     gcc
     gnumake
@@ -60,42 +60,41 @@
     # File Managers
     ranger
     lf
-    
-     #KDE stuffs
+   
+    #KDE stuffs
     latte-dock
-    libsForQt511.qtstyleplugin-kvantum   
-    kde-gtk-config
-
+    libsForQt511.qtstyleplugin-kvantum    
 
     # Sw4g
-    neofetch
-    
-    # Neovim 
+    lxappearance  # UI customization
+    pywal         # colorscheme generator
+    compton       # Window compositor
+    neofetch      # So you can make some of the cool screenshot you see on r/unixporn
+
+    (polybar.override {
+      i3GapsSupport = true;
+      pulseSupport = true;
+    })
+
+     # Neovim 
     (unstable.neovim.override {
       configure = {
         customRC = ''
           set number
           set termguicolors " Can't use this with wal-vim
           set background=dark
-
           colorscheme one
           let g:airline_theme = 'one'
-
           let g:rainbow_active = 1
-
           nmap <C-n> :NERDTreeToggle<CR>
-
           inoremap <expr> <C-j> pumvisible() ? "\<C-n>" : "\<C-j>"
           inoremap <expr> <C-k> pumvisible() ? "\<C-p>" : "\<C-k>"
           
           au BufRead,BufNewFile *.sbt set filetype=scala
-
           " For God's sake
           nnoremap <Esc> <Esc> :noh <CR><Left>
-
           " Format correctly on <cr> when inside parens
           inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-
           " Improve editing speed
           inoremap kj <Esc>
           inoremap jk <Esc>
@@ -105,7 +104,6 @@
           nnoremap <C-K> <C-W><C-K>
           nnoremap <C-L> <C-W><C-L>
           nnoremap <C-H> <C-W><C-H>
-
           " Move lines around
           nnoremap <A-j> :m .+1<CR>==
           nnoremap <A-k> :m .-2<CR>==
@@ -113,7 +111,6 @@
           " inoremap <A-k> <Esc>:m .-2<CR>==gi
           vnoremap <A-j> :m '>+1<CR>gv=gv
           vnoremap <A-k> :m '<-2<CR>gv=gv
-
           " BELOW OPTIONS ARE FROM `https://scalameta.org/metals/docs/editors/vim.html`
           " Smaller updatetime for CursorHold & CursorHoldI
           set updatetime=300
@@ -183,7 +180,6 @@
           nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
           " Resume latest coc list
           nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
-
           " From here just remapping to show metals some love
           command ImportBuild call CocRequestAsync('metals', 'workspace/executeCommand', { 'command': 'build-import' })
           command RunDoctor call CocRequestAsync('metals', 'workspace/executeCommand', { 'command': 'doctor-run' })
